@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>قائمة جميع المستخدمين</title>
+<title>قائمة الناخبين</title>
 <style>
 body { font-family: Tahoma, sans-serif; background-color: #f8f9fa; padding: 20px; padding-top: 100px; }
 
@@ -85,15 +85,15 @@ tr:nth-child(even) { background-color: #f2f2f2; }
     <table>
         <thead>
             <tr>
-                <th>الاسم (Username)</th>
-                <th>رقم الهاتف (Phone Number)</th>
+                <th>الاسم</th>
+                <th>رقم الهاتف</th>
                 <th>مرشح؟</th>
             </tr>
         </thead>
         <tbody>
             {% for user in all_users %}
             <tr>
-                <td>{{ user.username }}</td>
+                <td>{{ user.candidate.name }}</td>
                 <td>
                     {% if user.userprofile and user.userprofile.phone_number %}
                         <span style="unicode-bidi: bidi-override; direction: ltr;">
