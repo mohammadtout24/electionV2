@@ -1,0 +1,30 @@
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# Django specific files
+*.log
+*.pot
+*.mo
+db.sqlite3
+
+# Media and image uploads (if not using external storage)
+/media/
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Security/Environment files (CRITICAL)
+*.env
+.env.*
+settings_local.py
+
+# Django Secret Key must NEVER be committed to Git. 
+# Ensure it's stored in environment variables, not settings.py.

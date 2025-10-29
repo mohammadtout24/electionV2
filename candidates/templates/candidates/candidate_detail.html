@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ candidate.name }} - Profile</title>
+    <style>
+        body { font-family: 'Inter', sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background-color: #f0f4f8; color: #333; }
+        .profile-container { background-color: white; border-radius: 12px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1); overflow: hidden; }
+        .profile-header { background-color: #007bff; color: white; padding: 40px 20px; text-align: center; }
+        .profile-image { 
+            width: 180px; height: 180px; border-radius: 50%; object-fit: cover; 
+            border: 6px solid white; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+            margin-top: -110px; /* Pulls image up */
+            position: relative;
+        }
+        .profile-content { padding: 40px 30px 20px; text-align: center; margin-top: -60px; }
+        .name { font-size: 2.5em; font-weight: 700; margin-bottom: 5px; color: #1e3a8a; }
+        .party { font-size: 1.2em; color: #6b7280; margin-bottom: 20px; }
+        h2 { color: #007bff; border-bottom: 2px solid #e0f0ff; padding-bottom: 8px; margin-top: 30px; font-weight: 600; text-align: left; }
+        .section-bio { text-align: left; margin-bottom: 30px; }
+        .section-topics { text-align: left; }
+        
+        .topic-card { 
+            background-color: #f9fbfc; padding: 20px; margin-bottom: 15px; border-radius: 8px; 
+            border-left: 5px solid #28a745; box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); 
+        }
+        .topic-card h3 { color: #28a745; margin-top: 0; margin-bottom: 10px; font-size: 1.4em; }
+        .topic-summary { color: #555; font-style: italic; margin-bottom: 10px; }
+        .cv-button, .policy-link { 
+            display: inline-block; padding: 10px 18px; 
+            background-color: #28a745; color: white; text-decoration: none; 
+            border-radius: 20px; margin-top: 15px; font-weight: 600; 
+            transition: background-color 0.3s;
+        }
+        .cv-button:hover, .policy-link:hover { background-color: #1e7e34; }
+        .policy-link { background-color: #007bff; margin-top: 5px; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        
+        <div class="profile-header">
+            <!-- Header space, image placeholder will be visually centered below it -->
+        </div>
+
+        <div class="profile-content">
+            <!-- Display image if available, otherwise a placeholder -->
+            {% if candidate.image %}
+                <img src="{{ candidate.image.url }}" alt="{{ candidate.name }}" class="profile-image">
+            {% endif %}
+            <div class="name">{{ candidate.name }}</div>
+            <div class="party">{{ candidate.party }}</div>
+
+            <div class="section-bio">
+                <h2>Biography</h2>
+                <p>{{ candidate.description|linebreaks }}</p>
+
+                {% if candidate.cv_pdf %}
+                    <div style="text-align: center;">
+                        <a href="{{ candidate.cv_pdf.url }}" target="_blank" class="cv-button">Download Full CV (PDF)</a>
+                    </div>
+                {% endif %}
+            </div>
+            
+
+            
+            
+            <p style="margin-top: 30px; text-align: center;">
+                <a href="{% url 'home' %}" style="color: #6c757d; text-decoration: none;">&larr; Back to Candidate List</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

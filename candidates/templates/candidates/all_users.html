@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قائمة جميع المستخدمين</title>
+<style>
+body { font-family: Tahoma, sans-serif; background-color: #f8f9fa; padding: 20px; padding-top: 100px; }
+
+/* --- Fixed Top Bar with Buttons --- */
+.fixed-actions-bar {
+    position: fixed; top: 0; left: 0; right: 0;
+    background-color: #f8f9fa; padding: 6px 0; z-index: 1000;
+}
+.fixed-actions-content {
+    max-width: 900px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    background: #fff; padding: 6px 20px; border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+.fixed-actions-content h1 { margin: 0; font-size: 1.2em; color: #007bff; }
+.fixed-buttons-container { display: flex; gap: 6px; }
+.fixed-buttons-container a,
+.fixed-buttons-container button {
+    padding: 5px 10px;
+    background-color: #10A3D6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.fixed-buttons-container a:hover,
+.fixed-buttons-container button:hover { background-color: #0c82ab; }
+.fixed-actions-content .logout-link a { color: purple; text-decoration: none; font-weight: 600; }
+.fixed-actions-content .logout-link a:hover { text-decoration: underline; }
+
+.container {
+    max-width: 900px; margin: 0 auto; background: white; padding: 20px;
+    border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { border: 1px solid #dee2e6; padding: 12px; text-align: right; }
+th { background-color: #e9ecef; color: #495057; font-weight: bold; }
+tr:nth-child(even) { background-color: #f2f2f2; }
+.is-candidate { color: green; font-weight: bold; }
+.not-available { color: #6c757d; font-style: italic; }
+.back-link { display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none; }
+.back-link:hover { text-decoration: underline; }
+
+/* Mobile */
+@media (max-width: 600px) {
+    body { padding-top: 120px; }
+    .container { padding: 15px; }
+    th, td { padding: 8px; font-size: 0.9em; }
+    table { display: block; overflow-x: auto; white-space: nowrap; }
+    thead, tbody, tr, th, td { display: revert; }
+    .fixed-actions-content { flex-direction: column; align-items: stretch; gap: 5px; }
+    .fixed-buttons-container { justify-content: center; flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<div class="fixed-actions-bar">
+    <div class="fixed-actions-content">
+        <h1>قائمة جميع المستخدمين</h1>
+
+        <div class="fixed-buttons-container">
+            <a href="{% url 'home' %}">الصفحة الرئيسية</a>
+            <a href="{% url 'candidate_results' %}">عرض نتائجي</a>
+        </div>
+
+        <div class="logout-link">
+            <a href="{% url 'logout' %}">تسجيل الخروج</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    {% if all_users %}
+    <table>
+        <thead>
+            <tr>
+                <th>الاسم (Username)</th>
+                <th>رقم الهاتف (Phone Number)</th>
+                <th>مرشح؟</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in all_users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>
+                    {% if user.userprofile and user.userprofile.phone_number %}
+                        <span style="unicode-bidi: bidi-override; direction: ltr;">
+                            {{ user.userprofile.phone_number }}
+                        </span>
+                    {% else %}
+                        <span class="not-available">غير متوفر</span>
+                    {% endif %}
+                </td>
+                <td>{% if user.candidate %}<span class="is-candidate">نعم</span>{% else %}لا{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p style="text-align: center;">لا يوجد مستخدمون لعرضهم.</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

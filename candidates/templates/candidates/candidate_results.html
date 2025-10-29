@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>نتائج الانتخابات</title>
+<style>
+body {
+    font-family: "Cairo", sans-serif;
+    background-color: #f0f4f8;
+    padding: 20px;
+    padding-top: 100px; /* space for fixed bar */
+    direction: rtl;
+}
+
+/* --- Fixed Top Bar with Buttons --- */
+.fixed-actions-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    background-color: #f0f4f8;
+    padding: 6px 0;
+}
+.fixed-actions-content {
+    max-width: 700px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 6px 20px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+}
+.fixed-actions-content h1 {
+    margin: 0;
+    font-size: 1.2em;
+    color: #007bff;
+}
+.fixed-buttons-container {
+    display: flex;
+    gap: 6px;
+}
+.fixed-buttons-container a,
+.fixed-buttons-container button {
+    padding: 5px 10px;
+    background-color: #10A3D6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.fixed-buttons-container a:hover,
+.fixed-buttons-container button:hover { background-color: #0c82ab; }
+
+.fixed-actions-content .logout-link a {
+    color: purple;
+    text-decoration: none;
+    font-weight: 600;
+}
+.fixed-actions-content .logout-link a:hover { text-decoration: underline; }
+
+.container {
+    background-color: white;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.1);
+}
+
+.result-card {
+    background-color: #f9fbfc;
+    border-right: 6px solid #28a745;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.self { background-color: #e6f7ff; border-right-color: #007bff; gap: 12px; }
+.self strong { color: #007bff; font-size: 1.1em; }
+.candidate-info { display: flex; align-items: center; gap: 8px; }
+.candidate-photo { width: 70px; height: 70px; border-radius: 50%; object-fit: cover; border: 2px solid #007bff; }
+.vote-stats { color: #333; font-weight: 600; text-align: right; }
+.rank { font-weight: bold; color: #555; }
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+    body { padding-top: 120px; }
+    .candidate-photo { width: 60px; height: 60px; }
+    .fixed-actions-content { flex-direction: column; align-items: stretch; gap: 5px; }
+    .fixed-buttons-container { justify-content: center; flex-wrap: wrap; }
+}
+</style>
+</head>
+<body>
+
+<div class="fixed-actions-bar">
+    <div class="fixed-actions-content">
+        <h1>نتائج الانتخابات</h1>
+
+        <div class="fixed-buttons-container">
+            <a href="{% url 'home' %}">الصفحة الرئيسية</a>
+            <a href="{% url 'all_users' %}">عرض جميع المستخدمين</a>
+        </div>
+
+        <div class="logout-link">
+            <a href="{% url 'logout' %}">تسجيل الخروج</a>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    {% for item in results %}
+    <div class="result-card {% if item.is_self %}self{% endif %}">
+        {% if item.is_self %}
+        <div class="candidate-info">
+            {% if item.image %}
+                <img src="{{ item.image }}" alt="{{ item.name }}" class="candidate-photo">
+            {% endif %}
+            <strong>{{ item.name }}</strong>
+        </div>
+        <div class="vote-stats">
+            عدد الأصوات: {{ item.vote_count }}<br>
+            النسبة: {{ item.percentage }}%
+        </div>
+        {% else %}
+        <div class="rank">#{{ forloop.counter }}</div>
+        <div class="vote-stats">
+            عدد الأصوات: {{ item.vote_count }}<br>
+            النسبة: {{ item.percentage }}%
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+
+    <p><strong>إجمالي الأصوات:</strong> {{ total_votes }}</p>
+</div>
+
+</body>
+</html>
