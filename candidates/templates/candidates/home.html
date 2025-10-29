@@ -2,7 +2,7 @@
 <html lang="ar">
 <head>
 <meta charset="UTF-8">
-<title>المرشحون للانتخابات</title>
+<title>صفحة التصويت</title>
 <style>
 /* Existing styles */
 body {
@@ -241,13 +241,13 @@ h4 {
         <h4>المشاريع</h4>
         <div class="fixed-buttons-container">
             {% if user.is_authenticated %}
-                <a href="{% url 'home' %}" class="vote-btn">صفحة التصويت</a>
+                
                 
                 {% if is_candidate %}
-                    <a href="{% url 'candidate_results' %}" class="vote-btn">عرض نتائجي</a>
+                    <a href="{% url 'candidate_results' %}" class="vote-btn">النتائج</a>
                 {% endif %}
                 {% if user.candidate %}
-                    <a href="{% url 'all_users' %}" class="vote-btn">عرض جميع المستخدمين</a>
+                    <a href="{% url 'all_users' %}" class="vote-btn">الناخبين</a>
                 {% endif %}
             {% endif %}
         </div>
