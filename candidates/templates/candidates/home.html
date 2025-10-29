@@ -1,236 +1,65 @@
 <!DOCTYPE html>
-<html lang="ar">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>المرشحون للانتخابات</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>قائمة جميع المستخدمين</title>
 <style>
-/* Existing styles */
-body {
-    font-family: "Cairo", "Tahoma", sans-serif;
-    background-color: #f0f4f8;
-    direction: rtl;
-    padding: 20px;
-    padding-top: 30px; 
-    line-height: 1.5;
-}
+body { font-family: Tahoma, sans-serif; background-color: #f8f9fa; padding: 20px; padding-top: 100px; }
 
-.container {
-    max-width: 780px;
-    margin: 0 auto;
-    background: #fff;
-    padding: 15px 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
-}
-
-/* Fixed Header Bar (General cleanup) */
+/* --- Fixed Top Bar with Buttons --- */
 .fixed-actions-bar {
-    position: fixed;
-    top: 0; right: 0; left: 0;
-    z-index: 1000;
-    background-color: #f0f4f8;
-    padding: 4px 0;
-    text-align: center;
+    position: fixed; top: 0; left: 0; right: 0;
+    background-color: #f8f9fa; padding: 6px 0; z-index: 1000;
 }
 .fixed-actions-content {
-    max-width: 780px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 4px 15px;
-    background: #fff;
-    border-radius: 10px;
+    max-width: 900px; margin: 0 auto;
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    background: #fff; padding: 6px 20px; border-radius: 10px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.1);
 }
-h4 {
-    color: #10A3D6;
-    margin: 0;
-    font-size: 1.05em;
-    font-weight: 700;
-}
-.login-link a {
-    color: #10A3D6;
-    font-weight: 600;
-    text-decoration: none;
-}
-.login-link a:hover { text-decoration: underline; }
-.fixed-buttons-container {
-    display: flex;
-    gap: 6px;
-}
-
-/* Candidate Card */
-.candidate-card {
-    background: #f9fbfc;
-    padding: 6px 8px;
-    border-radius: 8px;
-    border-right: 3px solid #10A3D6;
-    margin-bottom: 6px;
-    display: flex;
-    flex-direction: column;
-    transition: background 0.3s;
-}
-.candidate-card:hover { background: #e8f6ff; }
-
-/* Radio + title line - ADJUSTED FOR IN-CARD BUTTON */
-.radio-top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between; 
-    gap: 4px;
-    font-size: 0.85em;
-    font-weight: bold;
-    color: #333;
-    margin-bottom: 4px;
-}
-.radio-topic-wrapper {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-}
-.radio-top input[type="radio"] {
-    transform: scale(0.95);
-}
-
-/* New style for the per-card vote button */
-.card-vote-btn {
-    background-color: #007bff; 
-    color: #fff;
+.fixed-actions-content h1 { margin: 0; font-size: 1.2em; color: #007bff; }
+.fixed-buttons-container { display: flex; gap: 6px; }
+.fixed-buttons-container a,
+.fixed-buttons-container button {
+    padding: 5px 10px;
+    background-color: #10A3D6;
+    color: white;
     border: none;
-    border-radius: 4px;
-    padding: 2px 8px; 
-    font-size: 0.75em; 
-    font-weight: 600;
+    border-radius: 6px;
+    font-weight: bold;
+    text-decoration: none;
     cursor: pointer;
     transition: 0.2s;
-    margin-right: 5px; 
-    flex-shrink: 0;
 }
-.card-vote-btn:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
+.fixed-buttons-container a:hover,
+.fixed-buttons-container button:hover { background-color: #0c82ab; }
+.fixed-actions-content .logout-link a { color: purple; text-decoration: none; font-weight: 600; }
+.fixed-actions-content .logout-link a:hover { text-decoration: underline; }
+
+.container {
+    max-width: 900px; margin: 0 auto; background: white; padding: 20px;
+    border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
+table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+th, td { border: 1px solid #dee2e6; padding: 12px; text-align: right; }
+th { background-color: #e9ecef; color: #495057; font-weight: bold; }
+tr:nth-child(even) { background-color: #f2f2f2; }
+.is-candidate { color: green; font-weight: bold; }
+.not-available { color: #6c757d; font-style: italic; }
+.back-link { display: block; text-align: center; margin-top: 20px; color: #007bff; text-decoration: none; }
+.back-link:hover { text-decoration: underline; }
 
-/* Candidate inner content */
-.candidate-inner {
-    display: flex;
-    flex-direction: row-reverse;
-    align-items: flex-start;
-    gap: 6px;
-}
-.candidate-photo {
-    width: 60px;
-    height: 72px;
-    border-radius: 4px;
-    border: 1px solid #10A3D6;
-    object-fit: cover;
-    flex-shrink: 0;
-}
-.candidate-info {
-    flex-grow: 1;
-    text-align: right;
-}
-.candidate-info strong {
-    display: block;
-    font-size: 1em;
-    color: #10A3D6;
-    margin-bottom: 0;
-}
-
-/* Bio summary + Read more inline */
-.bio-summary-wrapper {
-    display: block; 
-    text-align: right;
-    margin-top: 2px;
-}
-.bio-summary {
-    display: inline; 
-    max-width: calc(100% - 80px);
-    white-space: nowrap; 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    vertical-align: middle;
-}
-.read-more-btn {
-    display: inline;
-    margin-left: 4px;
-    background: none;
-    color: #10A3D6;
-    border: none;
-    cursor: pointer;
-    font-size: 0.8em;
-    font-weight: bold;
-    padding: 0;
-    text-decoration: underline;
-}
-.read-more-btn:hover { color: #0d6efd; }
-
-/* Expanded description */
-.candidate-description-wrapper {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease-out;
-    margin-top: 2px;
-}
-.candidate-description-wrapper.expanded {
-    max-height: 1000px;
-}
-.candidate-description {
-    padding-top: 4px;
-    border-top: 1px dashed #e9ecef;
-    font-size: 0.85em;
-    line-height: 1.4;
-    white-space: normal; 
-}
-
-/* General Buttons */
-.vote-btn, .results-btn {
-    background-color: #10A3D6;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
-    padding: 4px 10px;
-    font-size: 0.8em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.3s;
-    text-decoration: none; /* Make sure links look like buttons */
-}
-.vote-btn:hover, .results-btn:hover {
-    background-color: #0c82ab;
-    transform: scale(1.03);
-}
-
-/* Messages */
-.message, .warning {
-    padding: 6px 10px;
-    border-radius: 6px;
-    margin-bottom: 10px;
-    font-size: 0.9em;
-}
-.message {
-    background: #d1e7dd;
-    color: #0f5132;
-}
-.warning {
-    background: #f8d7da;
-    color: #842029;
-}
-
-/* Mobile tweaks */
+/* Mobile */
 @media (max-width: 600px) {
-    body { padding: 10px; padding-top: 80px; }
-    .fixed-actions-content { flex-direction: column; gap: 4px; padding: 5px 10px; }
-    .fixed-buttons-container { flex-direction: column; }
-    .vote-btn, .results-btn { width: 100%; } 
-    .candidate-inner { flex-direction: column-reverse; align-items: center; }
-    .candidate-photo { width: 65px; height: 75px; }
-    .candidate-info { text-align: right; }
-    .bio-summary-wrapper { display: block; }
-    .bio-summary { white-space: nowrap; font-size: 0.8em; }
-    .read-more-btn { display: inline; }
+    body { padding-top: 120px; }
+    .container { padding: 15px; }
+    th, td { padding: 8px; font-size: 0.9em; }
+    table { display: block; overflow-x: auto; white-space: nowrap; }
+    thead, tbody, tr, th, td { display: revert; }
+    .fixed-actions-content { flex-direction: column; align-items: stretch; gap: 5px; }
+    .fixed-buttons-container { justify-content: center; flex-wrap: wrap; }
 }
 </style>
 </head>
@@ -238,149 +67,51 @@ h4 {
 
 <div class="fixed-actions-bar">
     <div class="fixed-actions-content">
-        <h4>المشاريع</h4>
+        <h1>قائمة جميع المستخدمين</h1>
+
         <div class="fixed-buttons-container">
-            {% if user.is_authenticated %}
-                <a href="{% url 'index' %}" class="vote-btn">صفحة التصويت</a>
-                
-                {% if is_candidate %}
-                    <a href="{% url 'candidate_results' %}" class="vote-btn">عرض نتائجي</a>
-                {% endif %}
-                {% if user.candidate %}
-                    <a href="{% url 'all_users' %}" class="vote-btn">عرض جميع المستخدمين</a>
-                {% endif %}
-            {% endif %}
-        </div>
-        <div class="login-link">
-            {% if user.is_authenticated %}
-                <a href="{% url 'logout' %}">تسجيل الخروج</a>
-            {% else %}
-                <a href="{% url 'login' %}">تسجيل دخول المرشح</a>
-            {% endif %}
+            <a href="{% url 'home' %}">الصفحة الرئيسية</a>
+            <a href="{% url 'candidate_results' %}">عرض نتائجي</a>
+        </div> 
+
+        <div class="logout-link">
+            <a href="{% url 'logout' %}">تسجيل الخروج</a>
         </div>
     </div>
 </div>
 
 <div class="container">
-    {% if messages %}
-        {% for message in messages %}
-            <div class="message">{{ message }}</div>
-        {% endfor %}
-    {% endif %}
-
-    {% if is_admin %}{% else %}
-        {% if voting_closed %}
-            <div class="warning">
-                انتهت فترة التصويت. لم يعد بالإمكان التصويت أو تعديل الأصوات بعد {{ deadline }}.
-            </div>
-        {% else %}
-            {% if has_voted and voted_for_name %}
-                <p><strong>لقد أدليت بصوتك سابقاً لصالح {{ voted_for_name }}. يمكنك تحديث اختيارك أدناه حتى {{ deadline }}:</strong></p>
-            {% endif %}
-        {% endif %}
-
-        {% if candidates_with_votes %}
-            
-            {% for item in candidates_with_votes %}
-                <form method="POST" action="{% url 'submit_vote' %}" id="vote-form-{{ item.candidate.id }}">
-                    {% csrf_token %}
-                    <input type="hidden" name="vote" value="{{ item.candidate.id }}">
-
-                    <div class="candidate-card">
-                        <div class="radio-top">
-                            <div class="radio-topic-wrapper">
-                                <input type="radio" name="selected_candidate"
-                                    value="{{ item.candidate.id }}"
-                                    id="candidate{{ item.candidate.id }}"
-                                    {% if item.candidate.id == voted_candidate_id %}checked{% endif %}
-                                    {% if voting_closed %}disabled{% endif %}>
-                                <span>صوت لهذا المشروع: **{{ item.candidate.topic }}**</span>
-                            </div>
-
-                            {% if not voting_closed %}
-                                <button type="submit" class="card-vote-btn" 
-                                        form="vote-form-{{ item.candidate.id }}"
-                                        {% if item.candidate.id == voted_candidate_id %}
-                                            style="background-color: #28a745;" /* Green if voted for */
-                                        {% endif %}>
-                                    صوّت الآن
-                                </button>
-                            {% endif %}
-                        </div>
-
-                        <label for="candidate{{ item.candidate.id }}" class="candidate-inner">
-                            <a href="{% url 'candidate_detail' item.candidate.id %}" style="text-decoration:none;">
-                                {% if item.candidate.image %}
-                                    <img src="{{ item.candidate.image.url }}" alt="{{ item.candidate.name }}" class="candidate-photo">
-                                {% endif %}
-                            </a>
-                            <div class="candidate-info">
-                                <strong>{{ item.candidate.name }}</strong>
-                                <div class="bio-summary-wrapper">
-                                    <span class="bio-summary">
-                                        {{ item.candidate.description|striptags|truncatechars:80 }}
-                                    </span>
-                                    <button type="button" class="read-more-btn"
-                                            id="read-more-btn-{{ item.candidate.id }}"
-                                            onclick="toggleReadMore('description-wrapper-{{ item.candidate.id }}', this)">
-                                        اقرأ المزيد
-                                    </button>
-                                </div>
-                                <div id="description-wrapper-{{ item.candidate.id }}" class="candidate-description-wrapper">
-                                    <div class="candidate-description">
-                                        {{ item.candidate.description|safe }}
-                                    </div>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                </form>
-                {% endfor %}
-            
-        {% else %}
-            <p style="text-align:right;">لم يتم تسجيل مرشحين بعد.</p>
-        {% endif %}
+    {% if all_users %}
+    <table>
+        <thead>
+            <tr>
+                <th>الاسم (Username)</th>
+                <th>رقم الهاتف (Phone Number)</th>
+                <th>مرشح؟</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in all_users %}
+            <tr>
+                <td>{{ user.username }}</td>
+                <td>
+                    {% if user.userprofile and user.userprofile.phone_number %}
+                        <span style="unicode-bidi: bidi-override; direction: ltr;">
+                            {{ user.userprofile.phone_number }}
+                        </span>
+                    {% else %}
+                        <span class="not-available">غير متوفر</span>
+                    {% endif %}
+                </td>
+                <td>{% if user.candidate %}<span class="is-candidate">نعم</span>{% else %}لا{% endif %}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+        <p style="text-align: center;">لا يوجد مستخدمون لعرضهم.</p>
     {% endif %}
 </div>
 
-<script>
-function toggleReadMore(wrapperId, button) {
-    const wrapper = document.getElementById(wrapperId);
-    const card = wrapper.closest('.candidate-card');
-    const summary = button.previousElementSibling;
-
-    if (wrapper.classList.contains('expanded')) {
-        wrapper.classList.remove('expanded');
-        button.textContent = 'اقرأ المزيد';
-        summary.style.display = 'inline';
-        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } else {
-        wrapper.classList.add('expanded');
-        button.textContent = 'إخفاء التفاصيل';
-        summary.style.display = 'none';
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.read-more-btn').forEach(button => {
-        const wrapperId = button.id.replace('read-more-btn-', 'description-wrapper-');
-        const wrapper = document.getElementById(wrapperId);
-        // Check if description is present and not empty
-        if (wrapper && wrapper.querySelector('.candidate-description').textContent.trim() === "") {
-            button.closest('.bio-summary-wrapper').style.display = 'none';
-        }
-    });
-
-    // Optional: Add a visual indicator to the selected radio button on card click
-    document.querySelectorAll('.candidate-inner').forEach(label => {
-        label.addEventListener('click', function() {
-            const radio = this.closest('.candidate-card').querySelector('input[type="radio"]');
-            if (radio && !radio.disabled) {
-                radio.checked = true;
-            }
-        });
-    });
-});
-</script>
 </body>
 </html>
