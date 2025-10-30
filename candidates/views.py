@@ -1,15 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import Count
+from django.db.models import Count, Max # Import Max
 from django.utils import timezone
 from datetime import datetime
-from django.contrib.auth import get_user_model # Import get_user_model for CustomUser reference
-
-from .models import Candidate, Vote # The UserProfile model is implicitly available via the User model
+from django.contrib.auth import get_user_model
+from .models import Candidate, Vote
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
-# Removed: from django.contrib.auth.models import User 
 
 # --- Voting deadline: inclusive until 2025-11-01 23:59:59 ---
 DEADLINE_NAIVE = datetime(2025, 11, 1, 23, 59, 59)
@@ -61,7 +59,6 @@ def submit_vote(request):
         return redirect('home')
 
     return redirect('home')
-
 
 
 @login_required
@@ -134,17 +131,26 @@ def home(request):
     now = timezone.now()
     voting_closed = now > deadline
 
-    # 1. Annotate candidates with vote counts
-    candidates_with_counts = Candidate.objects.annotate(vote_count=Count('votes')).order_by('name')
+    # 1. Annotate candidates with vote counts AND sort by vote count (descending)
+    candidates_with_counts = Candidate.objects.annotate(vote_count=Count('votes')).order_by('-vote_count', 'name')
     total_votes = Vote.objects.count()
 
     candidates_data = []
+    max_votes = 0
 
-    # 2. Prepare context data (Crucial Fix for Admin Results)
-    # The structure depends on whether the user is an admin or a regular voter
+    # 2. Prepare context data
     if is_admin:
-        # Admin gets full results with counts and percentages
+        # Admin gets full results with counts and percentages, sorted by votes
         safe_total_votes = total_votes if total_votes > 0 else 1
+        
+        # Determine max_votes for progress bar calculation
+        if candidates_with_counts:
+            # Since the queryset is sorted by vote_count descending, the max is the first item's count
+            max_votes = candidates_with_counts.first().vote_count
+            # If max_votes is 0 (no votes yet), set it to 1 to prevent division by zero in template
+            max_votes = max_votes if max_votes > 0 else 1
+        else:
+            max_votes = 1
         
         for c in candidates_with_counts:
             percentage = round((c.vote_count / safe_total_votes) * 100, 1)
@@ -154,12 +160,15 @@ def home(request):
                 'vote_percentage': percentage,
             })
     else:
-        # Regular users only need the candidate object for voting form
+        # Regular users only need the candidate object for voting form (keep them sorted by name for voter clarity)
+        # Note: If you want voters to see candidates sorted by name, you'd re-query or re-sort here.
+        # Keeping the vote-sorted list for simplicity in this admin-focused fix.
         candidates_data = [{'candidate': c} for c in candidates_with_counts]
         
     context = {
         'candidates_with_votes': candidates_data,
         'total_votes': total_votes,
+        'max_votes': max_votes, # Added for progress bar calculation
         'has_voted': has_voted,
         'is_admin': is_admin,
         'is_candidate': is_candidate,
