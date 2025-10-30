@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import Count, Max # Import Max
+from django.db.models import Count # No need to import Max, as we use .first() after sorting
 from django.utils import timezone
 from datetime import datetime
 from django.contrib.auth import get_user_model
@@ -35,8 +35,7 @@ def submit_vote(request):
             return redirect('home')
 
         # Handle logged in users
-        if user and user.is_authenticated: # Explicitly check for is_authenticated again just in case
-            # We use update_or_create to allow users to change their vote
+        if user and user.is_authenticated:
             vote_obj, created = Vote.objects.update_or_create(
                 user=user,
                 defaults={'candidate': candidate, 'session_key': session_key}
@@ -47,7 +46,6 @@ def submit_vote(request):
                 session_key=session_key,
                 defaults={'candidate': candidate}
             )
-            # Store the name in session for anonymous users to show 'voted for' message (optional but consistent)
             request.session['voted_for'] = candidate.name
 
 
@@ -66,12 +64,10 @@ def candidate_results(request):
     """Show results to candidates — only their own name/image and vote details, others hidden."""
     user = request.user
 
-    # Ensure user is a candidate
     if not hasattr(user, 'candidate'):
         messages.error(request, "هذه الصفحة مخصصة للمرشحين فقط.")
         return redirect('home')
 
-    # Get all candidates with vote counts
     candidates = Candidate.objects.annotate(vote_count=Count('votes')).order_by('-vote_count')
     total_votes = Vote.objects.count() or 1
 
@@ -82,8 +78,8 @@ def candidate_results(request):
         results.append({
             'id': c.id,
             'is_self': c.user == user,
-            'name': c.name if c.user == user else None,  # Only show name of logged-in candidate
-            'image': c.image.url if (c.user == user and c.image) else None,  # Only show image for self
+            'name': c.name if c.user == user else None,
+            'image': c.image.url if (c.user == user and c.image) else None,
             'vote_count': c.vote_count,
             'percentage': percentage,
         })
@@ -95,22 +91,20 @@ def candidate_results(request):
     return render(request, 'candidates/candidate_results.html', context)
 
 
-
 def home(request):
     """Main election page with voting or results depending on role."""
-    # Ensure session key exists for anonymous voting/tracking
     if not request.session.session_key:
         request.session.create()
 
     user = request.user
-    is_admin = user.is_authenticated and (user.is_staff or user.is_superuser) # Check authentication before staff/superuser
+    is_admin = user.is_authenticated and (user.is_staff or user.is_superuser)
     is_candidate = user.is_authenticated and hasattr(user, 'candidate')
 
     has_voted = False
     voted_candidate_id = None
     voted_for_name = None 
 
-    # Determine if the user/session has voted
+    # Determine if the user/session has voted (logic unchanged)
     if user.is_authenticated:
         vote_obj = Vote.objects.filter(user=user).select_related('candidate').first()
         if vote_obj:
@@ -118,7 +112,6 @@ def home(request):
             voted_candidate_id = vote_obj.candidate.id
             voted_for_name = vote_obj.candidate.name
     else:
-        # Anonymous user voting check
         session_key = request.session.session_key
         vote_obj = Vote.objects.filter(session_key=session_key, user__isnull=True).select_related('candidate').first()
         if vote_obj:
@@ -131,26 +124,30 @@ def home(request):
     now = timezone.now()
     voting_closed = now > deadline
 
-    # 1. Annotate candidates with vote counts AND sort by vote count (descending)
-    candidates_with_counts = Candidate.objects.annotate(vote_count=Count('votes')).order_by('-vote_count', 'name')
+    # --- CONDITIONAL SORTING LOGIC ---
+    candidates_queryset = Candidate.objects.annotate(vote_count=Count('votes'))
+    
+    if is_admin:
+        # Admin: Sort by votes (descending), then by name
+        candidates_with_counts = candidates_queryset.order_by('-vote_count', 'name')
+    else:
+        # Voter/Candidate: Sort strictly by name (alphabetical, ascending)
+        candidates_with_counts = candidates_queryset.order_by('name')
+        
     total_votes = Vote.objects.count()
 
     candidates_data = []
-    max_votes = 0
+    max_votes = 1 # Initialize max_votes for progress bar calculation
 
     # 2. Prepare context data
     if is_admin:
-        # Admin gets full results with counts and percentages, sorted by votes
+        # Admin view: Calculate max_votes and build detailed results data
         safe_total_votes = total_votes if total_votes > 0 else 1
         
-        # Determine max_votes for progress bar calculation
         if candidates_with_counts:
             # Since the queryset is sorted by vote_count descending, the max is the first item's count
             max_votes = candidates_with_counts.first().vote_count
-            # If max_votes is 0 (no votes yet), set it to 1 to prevent division by zero in template
-            max_votes = max_votes if max_votes > 0 else 1
-        else:
-            max_votes = 1
+            max_votes = max_votes if max_votes > 0 else 1 # Ensure no division by zero
         
         for c in candidates_with_counts:
             percentage = round((c.vote_count / safe_total_votes) * 100, 1)
@@ -160,19 +157,17 @@ def home(request):
                 'vote_percentage': percentage,
             })
     else:
-        # Regular users only need the candidate object for voting form (keep them sorted by name for voter clarity)
-        # Note: If you want voters to see candidates sorted by name, you'd re-query or re-sort here.
-        # Keeping the vote-sorted list for simplicity in this admin-focused fix.
+        # Voter view: Just pass candidate objects
         candidates_data = [{'candidate': c} for c in candidates_with_counts]
         
     context = {
         'candidates_with_votes': candidates_data,
         'total_votes': total_votes,
-        'max_votes': max_votes, # Added for progress bar calculation
+        'max_votes': max_votes,
         'has_voted': has_voted,
         'is_admin': is_admin,
         'is_candidate': is_candidate,
-        'voted_for_name': voted_for_name, # Use the determined name
+        'voted_for_name': voted_for_name,
         'voted_candidate_id': voted_candidate_id,
         'voting_closed': voting_closed,
         'deadline': deadline.date(),
@@ -196,7 +191,6 @@ def login_view(request):
             login(request, user)
             messages.success(request, f"مرحبًا بعودتك، {user.username}!")
 
-            # Both candidates and regular users go to home after login
             return redirect('home')
         else:
             messages.error(request, "اسم المستخدم أو كلمة المرور غير صحيحة.")
@@ -213,18 +207,12 @@ def logout_view(request):
 
 @login_required
 def all_users_list(request):
-    # Only candidates can access this page
     if not hasattr(request.user, 'candidate'):
         messages.error(request, "غير مصرح لك بالوصول إلى هذه الصفحة.")
         return redirect('home')
 
-    # Get the CustomUser model (which is the default User model in this project)
     CustomUser = get_user_model()
     
-    # Fetch all User objects. We use select_related('userprofile') to efficiently 
-    # fetch the phone_number data (from the UserProfile table) in the same query.
-    # We also prefetch_related('candidate') to check if the user is a candidate easily.
-    # Note: userprofile must be a OneToOneField from CustomUser.
     all_users = CustomUser.objects.filter(is_superuser=False).select_related('userprofile').prefetch_related('candidate').order_by('username')
     
     context = {
