@@ -10,7 +10,7 @@ body {
     background-color: #f0f4f8;
     direction: rtl;
     padding: 20px;
-    padding-top: 30px; 
+    padding-top: 30px;
     line-height: 1.5;
 }
 
@@ -77,7 +77,7 @@ h4 {
 .radio-top {
     display: flex;
     align-items: center;
-    justify-content: space-between; 
+    justify-content: space-between;
     gap: 4px;
     font-size: 0.85em;
     font-weight: bold;
@@ -95,16 +95,16 @@ h4 {
 
 /* New style for the per-card vote button */
 .card-vote-btn {
-    background-color: #007bff; 
+    background-color: #007bff;
     color: #fff;
     border: none;
     border-radius: 4px;
-    padding: 2px 8px; 
-    font-size: 0.75em; 
+    padding: 2px 8px;
+    font-size: 0.75em;
     font-weight: 600;
     cursor: pointer;
     transition: 0.2s;
-    margin-right: 5px; 
+    margin-right: 5px;
     flex-shrink: 0;
 }
 .card-vote-btn:hover {
@@ -141,14 +141,14 @@ h4 {
 
 /* Bio summary + Read more inline */
 .bio-summary-wrapper {
-    display: block; 
+    display: block;
     text-align: right;
     margin-top: 2px;
 }
 .bio-summary {
-    display: inline; 
+    display: inline;
     max-width: calc(100% - 80px);
-    white-space: nowrap; 
+    white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     vertical-align: middle;
@@ -182,7 +182,7 @@ h4 {
     border-top: 1px dashed #e9ecef;
     font-size: 0.85em;
     line-height: 1.4;
-    white-space: normal; 
+    white-space: normal;
 }
 
 /* General Buttons */
@@ -202,6 +202,63 @@ h4 {
     background-color: #0c82ab;
     transform: scale(1.03);
 }
+
+/* Results specific styles (UPDATED FOR VISUALISATION) */
+.results-heading {
+    color: #10A3D6;
+    font-size: 1.5em;
+    border-bottom: 2px solid #10A3D6;
+    padding-bottom: 5px;
+    margin-bottom: 15px;
+    text-align: right;
+}
+.result-card {
+    background: #f0f8ff;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border-left: 5px solid #10A3D6;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column; /* Changed to column for name/bar stack */
+    gap: 8px;
+    font-size: 1.1em;
+}
+.result-card strong {
+    color: #333;
+    display: block; /* Ensures name takes full width */
+    text-align: right;
+}
+.result-visualisation {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    direction: ltr; /* Ensure progress bar and count display left-to-right */
+}
+.vote-count {
+    background-color: #10A3D6;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    min-width: 40px;
+    text-align: center;
+    font-size: 1.1em;
+    font-weight: 700;
+    flex-shrink: 0; /* Prevents count from shrinking */
+}
+.progress-container {
+    flex-grow: 1;
+    background-color: #e9ecef;
+    border-radius: 4px;
+    height: 25px;
+    overflow: hidden;
+}
+.progress-bar {
+    height: 100%;
+    background-color: #28a745; /* Green for progress */
+    transition: width 0.5s ease-in-out;
+    text-align: left;
+}
+
 
 /* Messages */
 .message, .warning {
@@ -224,7 +281,7 @@ h4 {
     body { padding: 10px; padding-top: 80px; }
     .fixed-actions-content { flex-direction: column; gap: 4px; padding: 5px 10px; }
     .fixed-buttons-container { flex-direction: column; }
-    .vote-btn, .results-btn { width: 100%; } 
+    .vote-btn, .results-btn { width: 100%; }
     .candidate-inner { flex-direction: column-reverse; align-items: center; }
     .candidate-photo { width: 65px; height: 75px; }
     .candidate-info { text-align: right; }
@@ -240,9 +297,8 @@ h4 {
     <div class="fixed-actions-content">
         <h4>المشاريع</h4>
         <div class="fixed-buttons-container">
-            {% if user.is_authenticated %}
-                
-                
+            {# The buttons are now only displayed for authenticated users who are NOT admins #}
+            {% if user.is_authenticated and not is_admin %}
                 {% if is_candidate %}
                     <a href="{% url 'candidate_results' %}" class="vote-btn">النتائج</a>
                 {% endif %}
@@ -268,7 +324,39 @@ h4 {
         {% endfor %}
     {% endif %}
 
-    {% if is_admin %}{% else %}
+    {% if is_admin %}
+        
+        {# ADMIN VIEW: Display Sorted and Visualized Results #}
+        <h2 class="results-heading">نتائج التصويت الإجمالية (مرتبة حسب عدد الأصوات)</h2>
+        
+        {% if candidates_with_votes %}
+            
+            {# NOTE: Sorting must be done in the Django view using item.vote_count before reaching the template #}
+            
+            {% for item in candidates_with_votes %}
+                <div class="result-card">
+                    <strong>{{ item.candidate.name }} - {{ item.candidate.topic }}</strong>
+                    
+                    <div class="result-visualisation">
+                        
+                        <span class="vote-count">{{ item.vote_count }}</span>
+                        
+                        <div class="progress-container">
+                            {# Calculate percentage width: (vote_count / max_votes) * 100 #}
+                            {# The 'max_votes' variable must be passed from the Django view #}
+                            <div class="progress-bar" style="width: {% widthratio item.vote_count max_votes 100 %}%;"></div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            
+        {% else %}
+            <p style="text-align:right;">لا توجد أصوات أو مرشحين لعرض النتائج.</p>
+        {% endif %}
+
+    {% else %}
+        
+        {# VOTER VIEW: Display voting form and status (Unchanged) #}
         {% if voting_closed %}
             <div class="warning">
                 انتهت فترة التصويت. لم يعد بالإمكان التصويت أو تعديل الأصوات بعد {{ deadline }}.
@@ -335,7 +423,7 @@ h4 {
                         </label>
                     </div>
                 </form>
-                {% endfor %}
+            {% endfor %}
             
         {% else %}
             <p style="text-align:right;">لم يتم تسجيل مرشحين بعد.</p>
