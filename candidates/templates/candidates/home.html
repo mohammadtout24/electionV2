@@ -285,7 +285,6 @@ h4 {
     .candidate-inner { flex-direction: column-reverse; align-items: center; }
     .candidate-photo { width: 65px; height: 75px; }
     .candidate-info { text-align: right; }
-    .bio-summary-wrapper { display: block; }
     .bio-summary { white-space: nowrap; font-size: 0.8em; }
     .read-more-btn { display: inline; }
 }
@@ -331,8 +330,6 @@ h4 {
         
         {% if candidates_with_votes %}
             
-            {# NOTE: Sorting must be done in the Django view using item.vote_count before reaching the template #}
-            
             {% for item in candidates_with_votes %}
                 <div class="result-card">
                     <strong>{{ item.candidate.name }} - {{ item.candidate.topic }}</strong>
@@ -342,8 +339,7 @@ h4 {
                         <span class="vote-count">{{ item.vote_count }}</span>
                         
                         <div class="progress-container">
-                            {# Calculate percentage width: (vote_count / max_votes) * 100 #}
-                            {# The 'max_votes' variable must be passed from the Django view #}
+                            {# Calculate percentage width using max_votes passed from the view #}
                             <div class="progress-bar" style="width: {% widthratio item.vote_count max_votes 100 %}%;"></div>
                         </div>
                     </div>
@@ -356,7 +352,7 @@ h4 {
 
     {% else %}
         
-        {# VOTER VIEW: Display voting form and status (Unchanged) #}
+        {# VOTER/CANDIDATE VIEW: Display voting form and status #}
         {% if voting_closed %}
             <div class="warning">
                 انتهت فترة التصويت. لم يعد بالإمكان التصويت أو تعديل الأصوات بعد {{ deadline }}.
