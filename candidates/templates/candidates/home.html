@@ -285,6 +285,7 @@ h4 {
     .candidate-inner { flex-direction: column-reverse; align-items: center; }
     .candidate-photo { width: 65px; height: 75px; }
     .candidate-info { text-align: right; }
+    .bio-summary-wrapper { display: block; }
     .bio-summary { white-space: nowrap; font-size: 0.8em; }
     .read-more-btn { display: inline; }
 }
@@ -339,7 +340,7 @@ h4 {
                         <span class="vote-count">{{ item.vote_count }}</span>
                         
                         <div class="progress-container">
-                            {# Calculate percentage width using max_votes passed from the view #}
+                            {# Calculate percentage width: (vote_count / max_votes) * 100 #}
                             <div class="progress-bar" style="width: {% widthratio item.vote_count max_votes 100 %}%;"></div>
                         </div>
                     </div>
@@ -352,7 +353,7 @@ h4 {
 
     {% else %}
         
-        {# VOTER/CANDIDATE VIEW: Display voting form and status #}
+        {# VOTER VIEW: Display voting form and status #}
         {% if voting_closed %}
             <div class="warning">
                 انتهت فترة التصويت. لم يعد بالإمكان التصويت أو تعديل الأصوات بعد {{ deadline }}.
@@ -402,7 +403,8 @@ h4 {
                                 <strong>{{ item.candidate.name }}</strong>
                                 <div class="bio-summary-wrapper">
                                     <span class="bio-summary">
-                                        {{ item.candidate.description|striptags|truncatechars:80 }}
+                                        {# FIX: Added |safe to correctly render HTML entities like &nbsp; in the summary #}
+                                        {{ item.candidate.description|striptags|truncatechars:80|safe }}
                                     </span>
                                     <button type="button" class="read-more-btn"
                                             id="read-more-btn-{{ item.candidate.id }}"
