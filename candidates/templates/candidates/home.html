@@ -463,7 +463,7 @@ h4 {
         {% if candidates_with_votes %}
             {% for item in candidates_with_votes %}
                 <div class="result-card">
-                    <strong>{{ item.candidate.name }} - {{ item.candidate.topic }}</strong>
+                    {{ item.candidate.name }} - {{ item.candidate.topic }}
                     <div class="result-visualisation">
                         <span class="vote-count">{{ item.vote_count }}</span>
                         <div class="progress-container">
@@ -513,7 +513,7 @@ h4 {
                                 {% endif %}
                             </a>
                             <div class="candidate-info">
-                                <strong>{{ item.candidate.name }}</strong>
+                                {{ item.candidate.name }}
                                 <div class="bio-summary-wrapper">
                                     <span class="bio-summary">
                                         {{ item.candidate.description|striptags|truncatechars:80|safe }}
