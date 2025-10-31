@@ -10,7 +10,8 @@ body {
     background-color: #f0f4f8;
     direction: rtl;
     padding: 20px;
-    padding-top: 30px;
+    /* Adjusted padding-top to accommodate the single-line header below */
+    padding-top: 70px; 
     line-height: 1.5;
 }
 
@@ -36,6 +37,7 @@ body {
     max-width: 780px;
     margin: 0 auto;
     display: flex;
+    flex-wrap: wrap; 
     align-items: center;
     justify-content: space-between;
     padding: 4px 15px;
@@ -48,6 +50,12 @@ h4 {
     margin: 0;
     font-size: 1.05em;
     font-weight: 700;
+    flex-basis: 25%; 
+    text-align: right;
+}
+.login-link {
+    flex-basis: 25%; 
+    text-align: left; 
 }
 .login-link a {
     color: #10A3D6;
@@ -55,25 +63,56 @@ h4 {
     text-decoration: none;
 }
 .login-link a:hover { text-decoration: underline; }
+
 .fixed-buttons-container {
     display: flex;
+    flex-direction: row; 
     gap: 6px;
+    justify-content: center; 
+    flex-basis: 50%; 
+    flex-grow: 1; 
+    order: 0; 
+    padding: 4px 0; 
 }
+
+/* New combined container for the submit action */
+.fixed-action-row {
+    width: 100%; /* Take full width below the main header row */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding-top: 5px;
+    border-top: 1px dashed #e9ecef;
+    order: 1; 
+}
+.fixed-action-row p {
+    margin: 0;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: #555;
+    flex-shrink: 1;
+}
+
 
 /* Candidate Card */
 .candidate-card {
     background: #f9fbfc;
-    padding: 6px 8px;
+    padding: 6px 8px; 
     border-radius: 8px;
     border-right: 3px solid #10A3D6;
     margin-bottom: 6px;
     display: flex;
     flex-direction: column;
-    transition: background 0.3s;
+    transition: background 0.3s, border-color 0.3s;
+}
+.candidate-card.selected {
+    background: #e8f6ff;
+    border-color: #0d6efd;
 }
 .candidate-card:hover { background: #e8f6ff; }
 
-/* Radio + title line - ADJUSTED FOR IN-CARD BUTTON */
+/* Radio + title line */
 .radio-top {
     display: flex;
     align-items: center;
@@ -93,41 +132,28 @@ h4 {
     transform: scale(0.95);
 }
 
-/* New style for the per-card vote button */
-.card-vote-btn {
-    background-color: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 4px;
-    padding: 2px 8px;
-    font-size: 0.75em;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-    margin-right: 5px;
-    flex-shrink: 0;
-}
-.card-vote-btn:hover {
-    background-color: #0056b3;
-    transform: scale(1.05);
-}
-
-
 /* Candidate inner content */
 .candidate-inner {
     display: flex;
     flex-direction: row-reverse;
-    align-items: flex-start;
+    align-items: stretch; 
     gap: 6px;
 }
-.candidate-photo {
-    width: 60px;
-    height: 72px;
-    border-radius: 4px;
-    border: 1px solid #10A3D6;
-    object-fit: cover;
+/* Ensure the link around the image also stretches */
+.candidate-inner a {
+    height: 100%;
     flex-shrink: 0;
 }
+.candidate-photo {
+    width: 90px; 
+    height: 100%; 
+    border-radius: 4px;
+    border: 1px solid #10A3D6;
+    object-fit: cover; 
+    flex-shrink: 0;
+}
+
+
 .candidate-info {
     flex-grow: 1;
     text-align: right;
@@ -147,7 +173,7 @@ h4 {
 }
 .bio-summary {
     display: inline;
-    max-width: calc(100% - 80px);
+    max-width: calc(100% - 95px); 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -185,9 +211,9 @@ h4 {
     white-space: normal;
 }
 
-/* General Buttons */
+/* General Buttons (Default is #10A3D6 for results/voter lists) */
 .vote-btn, .results-btn {
-    background-color: #10A3D6;
+    background-color: #10A3D6; 
     color: #fff;
     border: none;
     border-radius: 5px;
@@ -196,12 +222,33 @@ h4 {
     font-weight: 600;
     cursor: pointer;
     transition: 0.3s;
-    text-decoration: none; /* Make sure links look like buttons */
+    text-decoration: none; 
 }
 .vote-btn:hover, .results-btn:hover {
     background-color: #0c82ab;
     transform: scale(1.03);
 }
+
+/* --- START: CUSTOM VOTE BUTTON STYLING (For Header Button) --- */
+/* Override default color for the main submit vote button */
+#submit-vote-btn {
+    background-color: #00A995; 
+    min-width: 150px; 
+    flex-shrink: 0;
+}
+#submit-vote-btn:hover {
+    background-color: #008878; 
+    transform: scale(1.03);
+}
+/* Button to look "selected" or "voted" (This state keeps the green for user feedback) */
+.vote-btn.selected-vote {
+    background-color: #28a745;
+}
+.vote-btn.selected-vote:hover {
+    background-color: #1e7e34;
+}
+/* --- END: CUSTOM VOTE BUTTON STYLING --- */
+
 
 /* Results specific styles (UPDATED FOR VISUALISATION) */
 .results-heading {
@@ -219,20 +266,20 @@ h4 {
     border-left: 5px solid #10A3D6;
     margin-bottom: 10px;
     display: flex;
-    flex-direction: column; /* Changed to column for name/bar stack */
+    flex-direction: column; 
     gap: 8px;
     font-size: 1.1em;
 }
 .result-card strong {
     color: #333;
-    display: block; /* Ensures name takes full width */
+    display: block; 
     text-align: right;
 }
 .result-visualisation {
     display: flex;
     align-items: center;
     gap: 10px;
-    direction: ltr; /* Ensure progress bar and count display left-to-right */
+    direction: ltr; 
 }
 .vote-count {
     background-color: #10A3D6;
@@ -243,7 +290,7 @@ h4 {
     text-align: center;
     font-size: 1.1em;
     font-weight: 700;
-    flex-shrink: 0; /* Prevents count from shrinking */
+    flex-shrink: 0; 
 }
 .progress-container {
     flex-grow: 1;
@@ -254,7 +301,7 @@ h4 {
 }
 .progress-bar {
     height: 100%;
-    background-color: #28a745; /* Green for progress */
+    background-color: #28a745; 
     transition: width 0.5s ease-in-out;
     text-align: left;
 }
@@ -277,17 +324,88 @@ h4 {
 }
 
 /* Mobile tweaks */
-@media (max-width: 600px) {
-    body { padding: 10px; padding-top: 80px; }
-    .fixed-actions-content { flex-direction: column; gap: 4px; padding: 5px 10px; }
-    .fixed-buttons-container { flex-direction: column; }
-    .vote-btn, .results-btn { width: 100%; }
-    .candidate-inner { flex-direction: column-reverse; align-items: center; }
-    .candidate-photo { width: 65px; height: 75px; }
-    .candidate-info { text-align: right; }
-    .bio-summary-wrapper { display: block; }
-    .bio-summary { white-space: nowrap; font-size: 0.8em; }
-    .read-more-btn { display: inline; }
+@media (max-width: 768px) { 
+    /* Increased body padding top for the two stacked rows (buttons + action row) */
+    body { 
+        padding: 10px; 
+        padding-top: 160px; 
+    }
+    .fixed-actions-content { 
+        flex-direction: column; 
+        gap: 6px; 
+        padding: 6px 10px; 
+    }
+    h4, .login-link {
+        margin-bottom: 4px; 
+        flex-basis: 100%; 
+        text-align: center; 
+    }
+    .fixed-buttons-container { 
+        flex-direction: row; 
+        width: 100%; 
+        justify-content: center; 
+        order: 1; 
+    }
+    
+    /* Mobile stacking for the action row */
+    .fixed-action-row {
+        flex-direction: column; /* Stack button and text vertically */
+        padding-top: 10px;
+        order: 2; 
+    }
+    .fixed-action-row p {
+        order: 1; /* Place text above the button on mobile */
+        margin-bottom: 8px;
+    }
+    .fixed-action-row button {
+        order: 2;
+    }
+
+    .fixed-buttons-container .vote-btn,
+    .fixed-action-row button {
+        width: 100%;
+        max-width: 250px; 
+    }
+
+    .candidate-inner { 
+        flex-direction: column-reverse; 
+        align-items: center; 
+        gap: 15px; 
+        padding-bottom: 4px;
+    }
+    .candidate-photo { 
+        width: 140px; 
+        height: auto; 
+        max-height: 160px; 
+    }
+    .candidate-inner a {
+        height: auto; 
+        width: 140px; 
+    }
+    .candidate-info { 
+        text-align: center; 
+        padding: 0 5px; 
+    }
+    .candidate-info strong {
+        font-size: 1.1em; 
+    }
+    .bio-summary-wrapper { 
+        text-align: center; 
+        margin-top: 4px;
+    }
+    .bio-summary { 
+        white-space: normal; 
+        max-width: 100%;
+        text-overflow: clip; 
+        display: block; 
+        overflow: visible;
+        font-size: 0.9em; 
+    }
+    .read-more-btn { 
+        display: block; 
+        text-align: center;
+        margin-top: 5px;
+    }
 }
 </style>
 </head>
@@ -296,17 +414,19 @@ h4 {
 <div class="fixed-actions-bar">
     <div class="fixed-actions-content">
         <h4>المشاريع</h4>
+        
+        {# Container for the two side-by-side buttons #}
         <div class="fixed-buttons-container">
-            {# The buttons are now only displayed for authenticated users who are NOT admins #}
             {% if user.is_authenticated and not is_admin %}
                 {% if is_candidate %}
-                    <a href="{% url 'candidate_results' %}" class="vote-btn">النتائج</a>
+                    <a href="{% url 'candidate_results' %}" class="vote-btn results-btn">النتائج</a>
                 {% endif %}
                 {% if user.candidate %}
                     <a href="{% url 'all_users' %}" class="vote-btn">قائمة الناخبين</a>
                 {% endif %}
             {% endif %}
         </div>
+
         <div class="login-link">
             {% if user.is_authenticated %}
                 <a href="{% url 'logout' %}">تسجيل الخروج</a>
@@ -314,6 +434,20 @@ h4 {
                 <a href="{% url 'login' %}">تسجيل دخول المرشح</a>
             {% endif %}
         </div>
+        
+        {# NEW: Combined action row for button and description #}
+        {% if not is_admin and not voting_closed %}
+            <div class="fixed-action-row">
+                <p>اختر مشروعك المفضل، ثم اضغط هنا </p>
+                <button type="submit" 
+                        id="submit-vote-btn" 
+                        class="vote-btn" 
+                        form="main-vote-form">
+                    تصويت
+                </button>
+            </div>
+        {% endif %}
+
     </div>
 </div>
 
@@ -325,35 +459,24 @@ h4 {
     {% endif %}
 
     {% if is_admin %}
-        
-        {# ADMIN VIEW: Display Sorted and Visualized Results #}
         <h2 class="results-heading">نتائج التصويت الإجمالية (مرتبة حسب عدد الأصوات)</h2>
-        
         {% if candidates_with_votes %}
-            
             {% for item in candidates_with_votes %}
                 <div class="result-card">
                     <strong>{{ item.candidate.name }} - {{ item.candidate.topic }}</strong>
-                    
                     <div class="result-visualisation">
-                        
                         <span class="vote-count">{{ item.vote_count }}</span>
-                        
                         <div class="progress-container">
-                            {# Calculate percentage width: (vote_count / max_votes) * 100 #}
                             <div class="progress-bar" style="width: {% widthratio item.vote_count max_votes 100 %}%;"></div>
                         </div>
                     </div>
                 </div>
             {% endfor %}
-            
         {% else %}
             <p style="text-align:right;">لا توجد أصوات أو مرشحين لعرض النتائج.</p>
         {% endif %}
 
     {% else %}
-        
-        {# VOTER VIEW: Display voting form and status #}
         {% if voting_closed %}
             <div class="warning">
                 انتهت فترة التصويت. لم يعد بالإمكان التصويت أو تعديل الأصوات بعد {{ deadline }}.
@@ -364,35 +487,25 @@ h4 {
             {% endif %}
         {% endif %}
 
-        {% if candidates_with_votes %}
-            
-            {% for item in candidates_with_votes %}
-                <form method="POST" action="{% url 'submit_vote' %}" id="vote-form-{{ item.candidate.id }}">
-                    {% csrf_token %}
-                    <input type="hidden" name="vote" value="{{ item.candidate.id }}">
-
-                    <div class="candidate-card">
+        {# RESTORED: Single form wrapping all candidates #}
+        <form method="POST" action="{% url 'submit_vote' %}" id="main-vote-form">
+            {% csrf_token %}
+            {% if candidates_with_votes %}
+                {% for item in candidates_with_votes %}
+                    <div class="candidate-card {% if item.candidate.id == voted_candidate_id %}selected{% endif %}" data-candidate-id="{{ item.candidate.id }}">
                         <div class="radio-top">
                             <div class="radio-topic-wrapper">
                                 <input type="radio" name="selected_candidate"
                                     value="{{ item.candidate.id }}"
                                     id="candidate{{ item.candidate.id }}"
                                     {% if item.candidate.id == voted_candidate_id %}checked{% endif %}
-                                    {% if voting_closed %}disabled{% endif %}>
+                                    {% if voting_closed %}disabled{% endif %}
+                                    {# CRITICAL FIX: Adding 'required' prevents the empty POST request causing the 404 #}
+                                    required>
                                 <span>صوت لهذا المشروع: {{ item.candidate.topic }}</span>
                             </div>
-
-                            {% if not voting_closed %}
-                                <button type="submit" class="card-vote-btn" 
-                                        form="vote-form-{{ item.candidate.id }}"
-                                        {% if item.candidate.id == voted_candidate_id %}
-                                            style="background-color: #28a745;" /* Green if voted for */
-                                        {% endif %}>
-                                    صوّت الآن
-                                </button>
-                            {% endif %}
+                            {# REMOVED: Card-specific button is gone #}
                         </div>
-
                         <label for="candidate{{ item.candidate.id }}" class="candidate-inner">
                             <a href="{% url 'candidate_detail' item.candidate.id %}" style="text-decoration:none;">
                                 {% if item.candidate.image %}
@@ -403,7 +516,6 @@ h4 {
                                 <strong>{{ item.candidate.name }}</strong>
                                 <div class="bio-summary-wrapper">
                                     <span class="bio-summary">
-                                        {# FIX: Added |safe to correctly render HTML entities like &nbsp; in the summary #}
                                         {{ item.candidate.description|striptags|truncatechars:80|safe }}
                                     </span>
                                     <button type="button" class="read-more-btn"
@@ -420,26 +532,29 @@ h4 {
                             </div>
                         </label>
                     </div>
-                </form>
-            {% endfor %}
-            
-        {% else %}
-            <p style="text-align:right;">لم يتم تسجيل مرشحين بعد.</p>
-        {% endif %}
+                {% endfor %}
+            {% else %}
+                <p style="text-align:right;">لم يتم تسجيل مرشحين بعد.</p>
+            {% endif %}
+        </form>
     {% endif %}
 </div>
 
 <script>
 function toggleReadMore(wrapperId, button) {
     const wrapper = document.getElementById(wrapperId);
-    const card = wrapper.closest('.candidate-card');
     const summary = button.previousElementSibling;
 
     if (wrapper.classList.contains('expanded')) {
         wrapper.classList.remove('expanded');
         button.textContent = 'اقرأ المزيد';
-        summary.style.display = 'inline';
-        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // Restore mobile/desktop summary visibility based on screen size
+        if (window.innerWidth <= 768) {
+             summary.style.display = 'block';
+        } else {
+             summary.style.display = 'inline';
+        }
     } else {
         wrapper.classList.add('expanded');
         button.textContent = 'إخفاء التفاصيل';
@@ -448,21 +563,71 @@ function toggleReadMore(wrapperId, button) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Hide 'Read More' button if description is empty
     document.querySelectorAll('.read-more-btn').forEach(button => {
         const wrapperId = button.id.replace('read-more-btn-', 'description-wrapper-');
         const wrapper = document.getElementById(wrapperId);
-        // Check if description is present and not empty
         if (wrapper && wrapper.querySelector('.candidate-description').textContent.trim() === "") {
             button.closest('.bio-summary-wrapper').style.display = 'none';
         }
     });
 
-    // Optional: Add a visual indicator to the selected radio button on card click
+    function updateVoteButtonAndCard() {
+        // NOTE: This logic assumes your Django view is now correctly looking for request.POST.get('selected_candidate')
+        const votedCandidateId = '{{ voted_candidate_id }}'; 
+        const submitButton = document.getElementById('submit-vote-btn');
+        let checkedRadio = document.querySelector('input[name="selected_candidate"]:checked');
+        
+        document.querySelectorAll('.candidate-card').forEach(card => card.classList.remove('selected'));
+
+        if (checkedRadio) {
+            const candidateId = checkedRadio.value;
+            const selectedCard = checkedRadio.closest('.candidate-card');
+            
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+
+            if (submitButton) {
+                if (candidateId === votedCandidateId) {
+                    submitButton.textContent ="تصويت";
+                    submitButton.classList.add('selected-vote');
+                    submitButton.disabled = false;
+                } else {
+                    submitButton.textContent = 'تصويت';
+                    submitButton.classList.remove('selected-vote');
+                    submitButton.disabled = false;
+                }
+            }
+        } else if (submitButton) {
+            submitButton.textContent = 'تصويت';
+            submitButton.classList.remove('selected-vote');
+            // button is enabled by default, but the 'required' attribute on the radio will stop submission if nothing is checked
+        }
+    }
+
+    // Call on load to set initial state
+    updateVoteButtonAndCard();
+
+    // Attach listener to radio buttons
+    document.querySelectorAll('input[name="selected_candidate"]').forEach(radio => {
+        if (!radio.disabled) {
+            radio.addEventListener('change', updateVoteButtonAndCard);
+        }
+    });
+    
+    // Attach listener to card content area
     document.querySelectorAll('.candidate-inner').forEach(label => {
-        label.addEventListener('click', function() {
+        label.addEventListener('click', function(event) {
+            // Prevent toggling the radio if the read-more button was clicked
+            if (event.target.classList.contains('read-more-btn')) {
+                return;
+            }
+
             const radio = this.closest('.candidate-card').querySelector('input[type="radio"]');
             if (radio && !radio.disabled) {
                 radio.checked = true;
+                setTimeout(updateVoteButtonAndCard, 0); 
             }
         });
     });
