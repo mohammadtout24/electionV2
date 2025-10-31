@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.db.models import Count # No need to import Max, as we use .first() after sorting
+from django.db.models import Count
 from django.utils import timezone
 from datetime import datetime
 from django.contrib.auth import get_user_model
@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 
 # --- Voting deadline: inclusive until 2025-11-01 23:59:59 ---
-DEADLINE_NAIVE = datetime(2025, 11, 1, 23, 59, 59)
+DEADLINE_NAIVE = datetime(2025, 11, 7 , 23, 59, 59)
 
 def get_aware_deadline():
     tz = timezone.get_current_timezone()
@@ -26,7 +26,15 @@ def submit_vote(request):
 
         session_key = request.session.session_key
 
-        candidate_id = request.POST.get('vote')
+        # 🚨 FIX APPLIED HERE: The HTML uses 'selected_candidate' for the radio buttons.
+        candidate_id = request.POST.get('selected_candidate')
+        
+        # Add a safeguard against missing data, though 'required' in HTML should handle this.
+        if not candidate_id:
+            messages.error(request, "الرجاء اختيار مرشح قبل التصويت.")
+            return redirect('home')
+            
+        # This will now successfully retrieve the candidate object using the correct key.
         candidate = get_object_or_404(Candidate, id=candidate_id)
 
         deadline = get_aware_deadline()
