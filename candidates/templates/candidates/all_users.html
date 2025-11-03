@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>قائمة الناخبين</title>
 <style>
-body { font-family: Tahoma, sans-serif; background-color: #f8f9fa; padding: 20px; padding-top: 100px; }
+body { font-family: Tahoma, sans-serif; background-color: #f8f9fa; padding: 20px; padding-top: 50px; }
 
 /* --- Fixed Top Bar with Buttons --- */
 .fixed-actions-bar {
@@ -70,9 +70,9 @@ tr:nth-child(even) { background-color: #f2f2f2; }
         <h1>قائمة الناخبين</h1>
 
         <div class="fixed-buttons-container">
-            <a href="{% url 'home' %}">صفحة التصويت</a>
-            <a href="{% url 'candidate_results' %}">النتائج</a>
-        </div>
+            <a href="{% url 'home' %}">الصفحة الرئيسية</a>
+            <a href="{% url 'candidate_results' %}">عرض نتائجي</a>
+        </div> 
 
         <div class="logout-link">
             <a href="{% url 'logout' %}">تسجيل الخروج</a>
@@ -86,14 +86,13 @@ tr:nth-child(even) { background-color: #f2f2f2; }
         <thead>
             <tr>
                 <th>الاسم</th>
-                <th>رقم الهاتف</th>
-                <th>مرشح؟</th>
+                <th>رقم الهاتف </th>
             </tr>
         </thead>
         <tbody>
             {% for user in all_users %}
             <tr>
-                <td>{{ user.candidate.name }}</td>
+                <td>{{ user.userprofile.name }}</td>
                 <td>
                     {% if user.userprofile and user.userprofile.phone_number %}
                         <span style="unicode-bidi: bidi-override; direction: ltr;">
@@ -103,13 +102,13 @@ tr:nth-child(even) { background-color: #f2f2f2; }
                         <span class="not-available">غير متوفر</span>
                     {% endif %}
                 </td>
-                <td>{% if user.candidate %}<span class="is-candidate">نعم</span>{% else %}لا{% endif %}</td>
+                
             </tr>
             {% endfor %}
         </tbody>
     </table>
     {% else %}
-        <p style="text-align: center;">لا يوجد مستخدمين لعرضهم.</p>
+        <p style="text-align: center;">لا يوجد مستخدمون لعرضهم.</p>
     {% endif %}
 </div>
 
