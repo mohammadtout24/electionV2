@@ -221,11 +221,12 @@ def all_users_list(request):
 
     CustomUser = get_user_model()
     
-    all_users = CustomUser.objects.filter(is_superuser=False).select_related('userprofile').prefetch_related('candidate').order_by('username')
     
+    all_users = User.objects.select_related('userprofile').order_by('userprofile__name')
     context = {
         'all_users': all_users, 
         'is_candidate': True,
     }
+    
     
     return render(request, 'candidates/all_users.html', context)
