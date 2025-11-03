@@ -10,6 +10,8 @@ class UserProfile(models.Model):
     # Field to store the phone number
     phone_number = models.CharField(max_length=20, blank=True, null=True, verbose_name="رقم الهاتف")
 
+    name = models.CharField(max_length=150, verbose_name="الاسم الكامل", blank=True, null=True)
+
     def __str__(self):
         return f"Profile for {self.user.username}"
 
