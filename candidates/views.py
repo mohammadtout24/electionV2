@@ -10,7 +10,7 @@ from django.contrib import messages
 from django.contrib.auth.forms import AuthenticationForm
 
 # --- Voting deadline: inclusive until 2025-11-01 23:59:59 ---
-DEADLINE_NAIVE = datetime(2025, 11, 7 , 23, 59, 59)
+DEADLINE_NAIVE = datetime(2025, 11, 6 , 23, 59, 59)
 
 def get_aware_deadline():
     tz = timezone.get_current_timezone()
